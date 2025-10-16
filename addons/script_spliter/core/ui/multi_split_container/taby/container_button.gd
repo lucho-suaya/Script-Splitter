@@ -30,7 +30,6 @@ func _on_enter() -> void:
 	
 
 func _on_exit() -> void:
-	print_stack()
 	remove_from_group(&"__SPLITER_BUTTON_TAB__")
 	var c : Color = Color.WHITE
 	c.a = 0.25

@@ -182,7 +182,7 @@ func create_new_column() -> SplitterEditorContainer.Editor:
 	var custom_position : bool = index >= 0 and index < item.get_parent().get_child_count() - 1
 	_last_editor_container = create_editor_container(create_base_container_item(root))
 	if custom_position:
-		root.move_child(_last_editor_container.get_parent(), index + 1)
+		root.move_child(get_base_container_item(_last_editor_container), index + 1)
 	return _last_editor_container
 	
 func create_new_row() -> SplitterEditorContainer.Editor:
