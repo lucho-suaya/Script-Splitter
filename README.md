@@ -1,4 +1,4 @@
-# Script-Spliter
+# Script-Splitter
 Tool addon for Godot 4, this addon allow split the script editor window.
 
 [![Godot Engine 4.3](https://img.shields.io/badge/Godot_Engine-4.x-blue)](https://godotengine.org/) ![ToolHack](https://img.shields.io/badge/Tool-Addon-green) ![Copyrights License](https://img.shields.io/badge/License-MIT-blue)
@@ -25,14 +25,27 @@ Tool addon for Godot 4, this addon allow split the script editor window.
 
 # NEWS [↑](#table-of-contents)
 
+### V0.5
+<p align="center">
+  <img width="128" height="128" src="https://github.com/CodeNameTwister/Misc/blob/main/media/ico_gdsp.svg?raw=true">
+</p>
+
+New split system compatible for **Godot 4.5**
+
+You can now create as many columns as you want in each row you create to customize your own experience.
+
+* You can easily split or merge it using the toolbar.
+* Remember that you can also disable the new tab behavior in the plugin/script_splitter editor options (with advance options enabled) and set "use old tabs"
+
+
 ### V0.4
 <p align="center">
   <img width="128" height="128" src="https://github.com/CodeNameTwister/Misc/blob/main/media/ico_gdsp4.png?raw=true">
 </p>
 
 Introduction to new behaviours
-* Better Tabs [#17](https://github.com/CodeNameTwister/Script-Spliter/issues/17) (Can be change in editor settings)
-* Sub-Split [#20](https://github.com/CodeNameTwister/Script-Spliter/issues/20)
+* Better Tabs [#17](https://github.com/CodeNameTwister/Script-Splitter/issues/17) (Can be change in editor settings)
+* Sub-Split [#20](https://github.com/CodeNameTwister/Script-Splitter/issues/20)
 > Getting close to the end of the road: This release is focused on fixing bugs in the embedded editors, while the floating editors remain a challenge to deliver acceptable functionality in my opinion, but I'm sure it won't be impossible to achieve while maintaining compatibility.
 
 ### V0.3
@@ -50,8 +63,8 @@ Introduction to using tabs
 You can use tabs to drag and drop into another split window to switch between editors or you can drag directly from the script list and drop into the split window.
 
 ### Modify Backward and Forward buttons
-You can modify the buttons by input resources in "script_spliter/io" folder,
-seen in [Backward/Forward Request](https://github.com/CodeNameTwister/Script-Spliter/issues/9#issuecomment-2917555511)
+You can modify the buttons by input resources in "script_Splitter/io" folder,
+seen in [Backward/Forward Request](https://github.com/CodeNameTwister/Script-Splitter/issues/9#issuecomment-2917555511)
 
 ### Using Backward/Forward
 It is per-window history, this means that if you've navigated through three different scripts within the window, moving back will only move between those three. The same happens when moving forward, and it's not affected by any other movements you've made in another window.
@@ -84,19 +97,19 @@ This has been done to maintain compatibility when using shorteners like Ctrl + [
 * Split Two Window Horizontal/Vertical.
 * Split Three Window Horizontal/Vertical.
 * Split Four Window Squared.
-* Split Custom Window defined by you. *(using RMB context menu or Tool Menu)*
+* Split Custom Window defined by you. *(using RMB context menu or ~Tool Menu~)*
 * Plugins Setting in Editor Settings. *(In the section Plugin, you can see with advance option enabled!)*
 * Pop Script: Make Floating Script in Separate Window using RMB context menu.
 * Refresh Warnings changes in all opened windows when project is saved *(Errors/Warning Script)*
-* Reopen recently closed/changed scripts when adding a split. (Suggestion: [#5](https://github.com/CodeNameTwister/Script-Spliter/issues/5))
-* Swap between windows by double-clicking the draggable button. (Suggestion: [#8](https://github.com/CodeNameTwister/Script-Spliter/issues/8))
-* Back and Forward between script opened by the window splited. (Suggestion: [#9](https://github.com/CodeNameTwister/Script-Spliter/issues/9))
-  * This functionality can be disabled in **Editor Settings**: `plugin/script_spliter/editor/behaviour/back_and_forward/handle_back_and_forward`
+* ~Reopen recently closed/changed scripts when adding a split. (Suggestion: [#5](https://github.com/CodeNameTwister/Script-Splitter/issues/5))~
+* Swap between windows by double-clicking the draggable button. (Suggestion: [#8](https://github.com/CodeNameTwister/Script-Splitter/issues/8))
+* Back and Forward between script opened by the window splited. (Suggestion: [#9](https://github.com/CodeNameTwister/Script-Splitter/issues/9))
+  * This functionality can be disabled in **Editor Settings**: `plugin/script_Splitter/editor/behaviour/back_and_forward/handle_back_and_forward`
 * Drag and Drop tabs between windows.
 * Tabs close options using (RMB) context menu.
-* Show All current active splited Scripts in Script List. (Feature: [#15](https://github.com/CodeNameTwister/Script-Spliter/issues/15))
-* Better Tabs (Feature: [#17](https://github.com/CodeNameTwister/Script-Spliter/issues/17))
-* Sub-Split (Feature: [#20](https://github.com/CodeNameTwister/Script-Spliter/issues/20))
+* Show All current active splited Scripts in Script List. (Feature: [#15](https://github.com/CodeNameTwister/Script-Splitter/issues/15))
+* Better Tabs (Feature: [#17](https://github.com/CodeNameTwister/Script-Splitter/issues/17))
+* Sub-Split (Feature: [#20](https://github.com/CodeNameTwister/Script-Splitter/issues/20))
   
 >[!WARNING]
 >Experimental Refresh Warnings *(This option can be disabled on Editor Settings)*
@@ -134,7 +147,7 @@ This has been done to maintain compatibility when using shorteners like Ctrl + [
 * Press shortcut (**Ctrl + 6**) for set three split of four windows: Squared split.
 
 ### Enable by Tool Menu [↑](#table-of-contents)
-For enable the Script spliter menu go to **Project > Tools > Script Spliter**.
+For enable the Script Splitter menu go to **Project > Tools > Script Splitter**.
 
 ![image](images/img0.png)
 
