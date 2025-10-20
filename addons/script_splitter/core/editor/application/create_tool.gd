@@ -79,10 +79,9 @@ func _is_editor(mt : MickeyTool, control : Control) -> bool:
 	if control is ScriptEditorBase:
 		var sce : ScriptEditor = EditorInterface.get_script_editor()
 		if sce and control in sce.get_open_script_editors():
-			if Engine.get_version_info().minor > 4:
-				if control.name.begins_with("@"):
-					if !("Script" in control.name):
-						return false
+			if control.name.begins_with("@"):
+				if !("Script" in control.name):
+					return false
 			return true
 		return _manager.get_editor_list().get_item_tooltip(control.get_index()).is_empty()
 		

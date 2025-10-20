@@ -153,8 +153,7 @@ func connect_callbacks(
 				if x[0].is_connected(x[1]):
 					x[0].disconnect(x[1])
 func _nws() -> void:
-	print("[Script Splitter] New Splitter System!\nNow use controls for split columns and rows as you like!")
-	pass
+	print("[Script Splitter] New Splitter System!\nNow use controls in toolbar for split columns and rows as you like!\nPlease provide feedback on the Github issues tab [https://github.com/CodeNameTwister/Script-Splitter]")
 	
 func swap_by_src(from : String, to : String, as_left : bool) -> void:
 	_editor_manager.swap_tab.execute([from, to, as_left])
@@ -163,7 +162,6 @@ func _clean_settings() -> void:
 	var e : EditorSettings = EditorInterface.get_editor_settings()
 	if e.has_setting("plugin/script_spliter/rows"):
 		_nws()
-		return
 		e.set_setting("plugin/script_spliter/rows", null)
 		e.set_setting("plugin/script_spliter/columns", null)
 		e.set_setting("plugin/script_spliter/save_rows_columns_count_on_exit", null)
@@ -172,6 +170,7 @@ func _clean_settings() -> void:
 		e.set_setting("plugin/script_spliter/editor/split/reopen_last_closed_editor_on_add_split", null)
 		e.set_setting("plugin/script_spliter/editor/split/remember_last_used_editor_buffer_size", null)
 		e.set_setting("plugin/script_spliter/behavior/auto_create_split_by_config", null)
+		e.set_setting("plugin/script_spliter/editor/list/colorize_actives", null)
 		
 		for x : String in [
 			"plugin/script_spliter/behaviour/refresh_warnings_on_save"
@@ -205,12 +204,13 @@ func _clean_settings() -> void:
 			
 			if e.has_setting(x):
 				e.set_setting(x.replace("/script_spliter/", "/script_splitter/"), e.get_setting(x))
-		
+				e.set_setting(x, null)
+				
 		for x : int in range(1, 11, 1):
 			e.set_setting(str("plugin/script_spliter/input/split_type_" , x), null)
 		
-		for x : int in range(1, 11, 1):
-			e.set_setting(str("plugin/script_splitter/input/split_type_" , x), null)
+		#for x : int in range(1, 11, 1):
+			#e.set_setting(str("plugin/script_splitter/input/split_type_" , x), null)
 		
 	
 func init_1(plugin : EditorPlugin, tab_container : TabContainer, item_list : ItemList) -> void:
