@@ -101,6 +101,7 @@ func _init(list : ItemList) -> void:
 	_script_list.item_activated.connect(_on_sc_item_activate)
 	_script_list.item_clicked.connect(_on_sc_item_clicked)
 	#_editor_list.draw.connect(_on_update_list)
+	_script_list.gui_input.connect(_on_script_list_gui_input)
 	
 	_script_list.add_to_group(&"__SP_LT__")
 	_array_list = [_editor_list, _script_list]
@@ -183,6 +184,37 @@ func _on_update_list_search(txt : String) -> void:
 			_script_list.set_item_custom_fg_color(indx, item_list.get_item_custom_fg_color(x))
 	
 	update_list_selection()
+	
+func _on_script_list_gui_input(event: InputEvent) -> void:
+	# Handle drag and drop for script list reordering
+	if event is not InputEventMouseMotion or not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		return
+	
+	var script_editor: ScriptEditor = EditorInterface.get_script_editor()
+	if !is_instance_valid(_script_list) or !is_instance_valid(_editor_list) or !is_instance_valid(script_editor):
+		return
+	
+	var hovered_item: int = _script_list.get_item_at_position(_script_list.get_local_mouse_position(), true)
+	var selected_items: PackedInt32Array = _script_list.get_selected_items()
+	if hovered_item < 0 or selected_items.size() <= 0:
+		return
+	
+	var selected_item: int = selected_items[0]
+	if hovered_item == selected_item:
+		return
+	
+	# Move the duplicate first and then the original (for persistence)
+	_script_list.move_item(selected_item, hovered_item)
+	if _editor_list.item_count > selected_item and _editor_list.item_count > hovered_item:
+		_editor_list.move_item(selected_item, hovered_item)
+	
+	# Find the editor TabContainer that matches our item count
+	var editors: Array[Node] = script_editor.find_children("*", "TabContainer", true, false)
+	for tab_container: TabContainer in editors:
+		if tab_container.get_child_count() == _editor_list.item_count:
+			if tab_container.get_child_count() > selected_item and tab_container.get_child_count() > hovered_item:
+				tab_container.move_child(tab_container.get_child(selected_item), hovered_item)
+				break
 	
 func update_list_selection() -> void:
 	if update_selections_callback.is_valid():
