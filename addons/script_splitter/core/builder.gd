@@ -84,7 +84,18 @@ func can_others_tab_close(values : Variant) -> bool:
 func update(_delta : float) -> void:
 	if _editor_manager.update():
 		_plugin.set_process(false)
-		
+	
+func trigger_metadata_update() -> void:
+	_editor_manager.update_metadata()
+	_editor_manager.update_request.emit()
+	
+func split_column() -> void:
+	_editor_manager.split_column.execute()
+	
+func close_split(source_container: TabContainer) -> void:
+	_editor_manager.unsplit_column(source_container)
+	_editor_manager.clear_editors()
+	
 func multi_split(number : int, as_row : bool) -> void:
 	var total : int = _editor_manager.get_current_total_splitters(null)
 	if total == number:

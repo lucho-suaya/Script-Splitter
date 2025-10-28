@@ -85,3 +85,60 @@ func _input(event: InputEvent) -> void:
 
 func _io_call(id : StringName) -> void:
 	builder.handle(id)
+
+func handle_script_drop(target_container: TabContainer, _script_idx: int, tooltip: String) -> void:
+	if !is_instance_valid(builder):
+		return
+	
+	# Create a split if there's only 1 editor container
+	var source_container: TabContainer = null
+	var editor_containers: Array[Node] = get_tree().get_nodes_in_group(&"__SP_EC__")
+	if editor_containers.size() <= 1:
+		builder.split_column()
+		await get_tree().process_frame
+		
+		# Get the 2nd container and move back any tabs auto-added to the new split (for some reason it adds some tabs?)
+		editor_containers = get_tree().get_nodes_in_group(&"__SP_EC__")
+		if editor_containers.size() > 1:
+			source_container = editor_containers[0].get_editor()
+			target_container = editor_containers[1].get_editor()
+			while target_container.get_tab_count() > 0:
+				var child: Control = target_container.get_child(0)
+				target_container.remove_child(child)
+				source_container.add_child(child)
+	
+	# Move the script
+	_move_script_to_split(target_container, source_container, tooltip)
+
+func _move_script_to_split(target_container: TabContainer, source_container: TabContainer, tooltip: String) -> void:
+	var script_editor: ScriptEditor = EditorInterface.get_script_editor()
+	if !is_instance_valid(builder) or !is_instance_valid(script_editor):
+		return
+	
+	# Find source container and source tab
+	var source_tab: Control = null
+	if source_container:
+		source_tab = _get_source_tab(source_container, tooltip)
+	else:
+		for container: TabContainer in script_editor.find_children("*", "TabContainer", true, false):
+			source_tab = _get_source_tab(container, tooltip)
+			if source_tab:
+				source_container = container
+				break
+	if !source_container or !source_tab or source_container == target_container:
+		return
+	
+	# Reparent the tab to the target container and close split if source container gets empty
+	source_container.remove_child(source_tab)
+	target_container.add_child(source_tab)
+	target_container.current_tab = target_container.get_tab_count() - 1
+	if source_container.get_tab_count() == 0:
+		builder.close_split(source_container)
+	
+	builder.trigger_metadata_update()
+
+func _get_source_tab(source_container: TabContainer, tooltip: String) -> Control:
+	for i: int in source_container.get_tab_count():
+		if source_container.get_tab_tooltip(i) == tooltip:
+			return source_container.get_child(i)
+	return null
