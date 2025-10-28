@@ -18,8 +18,10 @@ signal remove(o : TabContainer, index : int)
 	
 var _new_tab_settings : bool = false
 var _tab_queue : int = -1
+var _tab_drag_started: bool = false
+var _dragged_tab: Control = null
 
-func _enter_tree() -> void:	
+func _enter_tree() -> void:
 	add_to_group(&"__SC_SPLITTER__")
 	
 func _exit_tree() -> void:
@@ -30,13 +32,11 @@ func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	
-	
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	
 	var tb : TabBar = get_tab_bar()
 	if tb:
 		tb.auto_translate_mode = auto_translate_mode
-
 	
 	drag_to_rearrange_enabled = true
 
@@ -50,7 +50,7 @@ func _ready() -> void:
 	tab.select_with_rmb = true
 	tab.on_start_drag.connect(on_drag)
 	tab.on_stop_drag.connect(out_drag)
-	
+
 func _set_tab() -> void:
 	if current_tab != _tab_queue and _tab_queue > -1 and _tab_queue < get_tab_count():
 		current_tab = _tab_queue
@@ -92,3 +92,23 @@ func set_item_tooltip(idx : int, txt : String) -> void:
 func set_item_text(idx : int, txt : String) -> void:
 	if idx > -1 and get_tab_count() > idx:
 		set_tab_title(idx, txt)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_BEGIN:
+		var editor_containers: Array[Node] = get_tree().get_nodes_in_group(&"__SP_EC__")
+		if editor_containers.size() <= 1 and current_tab >= 0 and current_tab < get_tab_count():
+			_tab_drag_started = true
+			_dragged_tab = get_tab_control(current_tab)
+	elif what == NOTIFICATION_DRAG_END:
+		if !_tab_drag_started:
+			return
+		
+		# Check if dropped below tabs and not on tabs and call plugin to handle script drag
+		_tab_drag_started = false
+		var mouse_pos: Vector2 = get_global_mouse_position()
+		if get_global_rect().has_point(mouse_pos) and (mouse_pos.y - get_global_rect().position.y) > 75.0:
+			var script_splitters: Array[Node] = get_tree().get_nodes_in_group(&"__SCRIPT_SPLITTER__")
+			if script_splitters.size() > 0:
+				script_splitters[0].call(&"on_tab_script_drag", self, _dragged_tab)
+		
+		_dragged_tab = null

@@ -73,17 +73,22 @@ func _notification(what: int) -> void:
 		_drag_data = {}
 	
 func _handle_drag_end() -> void:
-	# If we're over an editor container, call plugin to handle script drop
+	# Check if we dropped on the script list (return if not)
 	var mouse_pos: Vector2 = get_global_mouse_position()
+	if get_global_rect().has_point(mouse_pos):
+		return
+	
+	# If we're over an editor container, call plugin to handle script drop
 	for editor_container: Node in get_tree().get_nodes_in_group(&"__SP_EC__"):
 		if !is_instance_valid(editor_container):
 			continue
 		if !editor_container.get_editor() or !editor_container.get_global_rect().has_point(mouse_pos):
 			continue
-		for node in get_tree().get_nodes_in_group(&"__SCRIPT_SPLITTER__"):
-			node.call(&"handle_script_drop", editor_container.get_editor(), _drag_data["index"], _drag_data["tooltip"])
+		
+		var script_splitters: Array[Node] = get_tree().get_nodes_in_group(&"__SCRIPT_SPLITTER__")
+		if script_splitters.size() > 0:
+			script_splitters[0].call(&"handle_script_drop", editor_container.get_editor(), _drag_data["index"], _drag_data["tooltip"])
 			return
-
 
 #
 #var dragged_item_index: int = -1

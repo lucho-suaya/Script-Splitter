@@ -86,40 +86,31 @@ func _input(event: InputEvent) -> void:
 func _io_call(id : StringName) -> void:
 	builder.handle(id)
 
+func _get_source_tab(source_container: TabContainer, tooltip: String) -> Control:
+	for i: int in source_container.get_tab_count():
+		if source_container.get_tab_tooltip(i) == tooltip:
+			return source_container.get_child(i)
+	return null
+
 func handle_script_drop(target_container: TabContainer, _script_idx: int, tooltip: String) -> void:
-	if !is_instance_valid(builder):
+	if !is_instance_valid(builder) or !is_instance_valid(EditorInterface.get_script_editor()):
 		return
 	
-	# Create a split if there's only 1 editor container
+	# Create a split if there's only 1 editor container and move the script
 	var source_container: TabContainer = null
 	var editor_containers: Array[Node] = get_tree().get_nodes_in_group(&"__SP_EC__")
 	if editor_containers.size() <= 1:
-		builder.split_column()
-		await get_tree().process_frame
-		
-		# Get the 2nd container and move back any tabs auto-added to the new split (for some reason it adds some tabs?)
-		editor_containers = get_tree().get_nodes_in_group(&"__SP_EC__")
-		if editor_containers.size() > 1:
-			source_container = editor_containers[0].get_editor()
-			target_container = editor_containers[1].get_editor()
-			while target_container.get_tab_count() > 0:
-				var child: Control = target_container.get_child(0)
-				target_container.remove_child(child)
-				source_container.add_child(child)
-	
-	# Move the script
-	_move_script_to_split(target_container, source_container, tooltip)
-
-func _move_script_to_split(target_container: TabContainer, source_container: TabContainer, tooltip: String) -> void:
-	var script_editor: ScriptEditor = EditorInterface.get_script_editor()
-	if !is_instance_valid(builder) or !is_instance_valid(script_editor):
-		return
+		var containers: Dictionary = await _create_split_and_clear_auto_tabs()
+		if !containers.is_empty():
+			source_container = containers["source"]
+			target_container = containers["target"]
 	
 	# Find source container and source tab
 	var source_tab: Control = null
 	if source_container:
 		source_tab = _get_source_tab(source_container, tooltip)
 	else:
+		var script_editor: ScriptEditor = EditorInterface.get_script_editor()
 		for container: TabContainer in script_editor.find_children("*", "TabContainer", true, false):
 			source_tab = _get_source_tab(container, tooltip)
 			if source_tab:
@@ -128,17 +119,51 @@ func _move_script_to_split(target_container: TabContainer, source_container: Tab
 	if !source_container or !source_tab or source_container == target_container:
 		return
 	
-	# Reparent the tab to the target container and close split if source container gets empty
-	source_container.remove_child(source_tab)
-	target_container.add_child(source_tab)
-	target_container.current_tab = target_container.get_tab_count() - 1
+	# Reparent the tab to the target container and switch tabs
+	source_tab.reparent(target_container)
+	_switch_tabs(source_container, target_container)
+
+func on_tab_script_drag(source_container: TabContainer, dragged_tab: Control) -> void:
+	if !is_instance_valid(builder) or !is_instance_valid(dragged_tab):
+		return
+	
+	# Create a split only if no splits exist
+	var editor_containers: Array[Node] = get_tree().get_nodes_in_group(&"__SP_EC__")
+	if editor_containers.size() > 1:
+		return
+	
+	var containers: Dictionary = await _create_split_and_clear_auto_tabs(dragged_tab)
+	if containers.is_empty():
+		return
+	
+	# Make sure dragged_tab gets moved and switch tabs
+	var target_container: TabContainer = containers["target"]
+	if dragged_tab.get_parent() != target_container:
+		dragged_tab.reparent(target_container)
+	
+	_switch_tabs(source_container, target_container)
+
+func _switch_tabs(source_container: TabContainer, target_container: TabContainer) -> void:
 	if source_container.get_tab_count() == 0:
 		builder.close_split(source_container)
 	
+	target_container.current_tab = target_container.get_tab_count() - 1
 	builder.trigger_metadata_update()
 
-func _get_source_tab(source_container: TabContainer, tooltip: String) -> Control:
-	for i: int in source_container.get_tab_count():
-		if source_container.get_tab_tooltip(i) == tooltip:
-			return source_container.get_child(i)
-	return null
+func _create_split_and_clear_auto_tabs(keep_tab: Control = null) -> Dictionary:
+	builder.split_column()
+	await get_tree().process_frame
+	
+	var editor_containers: Array[Node] = get_tree().get_nodes_in_group(&"__SP_EC__")
+	if editor_containers.size() <= 1:
+		return {}
+	
+	# Move all auto-added tabs back to source, except the one we want to keep
+	var source_container: TabContainer = editor_containers[0].get_editor()
+	var target_container: TabContainer = editor_containers[1].get_editor()
+	for i in range(target_container.get_tab_count() - 1, -1, -1):
+		var child: Control = target_container.get_child(i)
+		if child != keep_tab:
+			child.reparent(source_container)
+	
+	return {"source": source_container, "target": target_container}
