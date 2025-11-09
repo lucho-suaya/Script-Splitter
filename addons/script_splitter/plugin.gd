@@ -66,6 +66,9 @@ func _ready() -> void:
 	
 func _save_external_data() -> void:
 	builder.refresh_warnings()
+	
+func remove_from_control(control : Node) -> void:
+	builder.reset_by_control(control)
 
 func _exit_tree() -> void:
 	remove_from_group(&"__SCRIPT_SPLITTER__")
