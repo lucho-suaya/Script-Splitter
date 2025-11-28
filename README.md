@@ -35,6 +35,7 @@ New split system compatible for **Godot 4.5**
 You can now create as many columns as you want in each row you create to customize your own experience.
 
 * You can easily split or merge it using the toolbar.
+* Collapse Taby gui on wheel.
 * Remember that you can also disable the new tab behavior in the plugin/script_splitter editor options (with advance options enabled) and set "use old tabs"
 
 
