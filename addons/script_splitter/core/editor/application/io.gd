@@ -244,10 +244,10 @@ func execute(value : Variant = null) -> bool:
 									else:
 										item.queue_free()
 								else:
-									if root.get_parent() is VBoxContainer:
-										root.get_parent().queue_free()
+									if _root.get_parent() is VBoxContainer:
+										_root.get_parent().queue_free()
 									else:
-										root.queue_free()
+										_root.queue_free()
 								
 														
 							new_window.setup()
